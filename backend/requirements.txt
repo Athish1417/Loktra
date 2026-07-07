@@ -1,0 +1,26 @@
+# --- Core API ---
+fastapi>=0.110
+uvicorn[standard]>=0.29
+python-multipart>=0.0.9
+
+# --- Data / ORM ---
+SQLAlchemy>=2.0
+pydantic>=2.6
+pydantic-settings>=2.2
+email-validator>=2.1
+
+# --- Auth ---
+PyJWT>=2.7
+bcrypt>=4.1
+
+# --- Config ---
+python-dotenv>=1.0
+
+# --- Government dataset import (CSV/XLSX/XLS) ---
+openpyxl>=3.1        # .xlsx
+xlrd>=2.0            # legacy .xls
+
+# --- AI (OPTIONAL) ---
+# The app runs fully without this via the rule-based fallback provider.
+# Install only if you want live Gemini analysis + set GEMINI_API_KEY.
+google-genai>=0.3

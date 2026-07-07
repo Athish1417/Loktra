@@ -1,0 +1,10 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Loktra">
+  <!-- Location pin: civic presence -->
+  <path d="M24 4C15.7 4 9 10.7 9 19c0 11 15 25 15 25s15-14 15-25C39 10.7 32.3 4 24 4Z" fill="#3B49C4"/>
+  <!-- Saffron accent ring -->
+  <circle cx="24" cy="19" r="11" fill="#F5A524"/>
+  <!-- White disc -->
+  <circle cx="24" cy="19" r="9.4" fill="#FFFFFF"/>
+  <!-- Green check: verified / resolved -->
+  <path d="M18.6 19.3l3.9 3.9 7.1-7.6" stroke="#12A150" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

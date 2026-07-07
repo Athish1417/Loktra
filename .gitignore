@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Env / secrets
+.env
+
+# DB / media
+*.db
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Government dataset files — keep folder structure, ignore downloaded data
+backend/datasets/**/*.csv
+backend/datasets/**/*.xlsx
+backend/datasets/**/*.xls
+!backend/datasets/**/.gitkeep
+
+# Node / frontend
+node_modules/
+dist/
+.vite/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
