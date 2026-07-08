@@ -18,7 +18,7 @@ python -m venv .venv && source .venv/bin/activate      # (Windows: .venv\Scripts
 pip install -r requirements.txt
 
 python -m app.db.init_db          # create + seed the demo database
-uvicorn app.main:app --reload     # http://localhost:8000  (docs at /docs)
+uvicorn app.main:app --reload     # https://loktra-production.up.railway.app  (docs at /docs)
 ```
 
 The app runs with **no API key** — it uses a deterministic rule-based AI provider
