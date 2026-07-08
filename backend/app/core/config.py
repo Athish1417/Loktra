@@ -39,12 +39,17 @@ class Settings(BaseSettings):
 
     # --- CORS (Vite dev server by default) ---
     CORS_ORIGINS: List[str] = [
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:3000",
-        "https://loktra-ndgrxpcs7-athishs-projects-934ca985.vercel.app",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+
+    # Vercel Frontend
+    "https://loktra-i7av1r6i1-athishs-projects-934ca985.vercel.app",
+
+    # Previous deployments
     "https://loktra-three.vercel.app",
-    ]
+    "https://loktra-ndgrxpcs7-athishs-projects-934ca985.vercel.app",
+]
 
 
 settings = Settings()
