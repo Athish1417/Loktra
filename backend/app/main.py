@@ -29,6 +29,21 @@ def create_app() -> FastAPI:
     # Create tables on boot (seed via `python -m app.db.init_db`).
     Base.metadata.create_all(bind=engine)
 
+    # Guarantee the demo login accounts exist with the correct roles on every boot.
+    # Done here (not only on the ASGI startup event) so it runs under any server
+    # setup. Never blocks boot.
+    try:
+        from app.db.session import SessionLocal
+        from app.services import auth_service
+
+        _db = SessionLocal()
+        try:
+            auth_service.ensure_demo_users(_db)
+        finally:
+            _db.close()
+    except Exception:  # pragma: no cover - never block boot
+        pass
+
     # Serve uploaded media.
     os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
     app.mount(
@@ -49,9 +64,11 @@ def create_app() -> FastAPI:
 
         db = SessionLocal()
         try:
+            from app.services import auth_service, routing_service
+
+            auth_service.ensure_demo_users(db)      # demo logins on a fresh deploy
             official_locations.seed_predefined(db)  # all-India fallback master data
             official_locations.sync(db)             # imported official locations on top
-            from app.services import routing_service
             routing_service.backfill(db)            # route any complaints missing mp_id
         except Exception:  # pragma: no cover - defensive
             pass

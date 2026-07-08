@@ -34,6 +34,17 @@ export const NO_MATCH_DATASET_MODE = "No Official Dataset Match";
 export const isOfficialComplaint = (c) =>
   c?.dataset_mode === OFFICIAL_DATASET_MODE;
 
+// Map any backend/display role variant to the canonical value the app compares on.
+// super_admin | admin | "Super Admin" | SUPER_ADMIN -> super_admin, etc.
+export function normalizeRole(role) {
+  const r = String(role || "").trim().toLowerCase().replace(/[\s-]+/g, "_");
+  if (r === "admin" || r === "super_admin" || r === "superadmin") return "super_admin";
+  if (r === "mp") return "mp";
+  if (r === "officer") return "officer";
+  if (r === "citizen") return "citizen";
+  return r;
+}
+
 // Workflow order — used to render progress rails.
 export const STATUS_FLOW = [
   "Submitted",

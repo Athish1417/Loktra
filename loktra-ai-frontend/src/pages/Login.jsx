@@ -68,11 +68,11 @@ export default function Login() {
 
     setBusy(true);
     try {
-      // Pass the selected role so a mismatch is rejected before any session is set.
+      // Enforce the selected role against the backend (source of truth). A mismatch
+      // is rejected before any session is established. Redirect by authenticated role.
       const user = await login(form.email, form.password, role);
       toast.success(`Welcome, ${user.name.split(" ")[0]}`);
-      const dest =
-        location.state?.from?.pathname || HOME_BY_ROLE[user.role] || "/app";
+      const dest = HOME_BY_ROLE[user.role] || location.state?.from?.pathname || "/app";
       navigate(dest, { replace: true });
     } catch (err2) {
       if (err2?.code === "ROLE_MISMATCH") {

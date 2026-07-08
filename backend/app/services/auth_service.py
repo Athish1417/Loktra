@@ -49,6 +49,54 @@ def register_user(
     return user
 
 
+# Default demo login accounts, seeded on startup so a freshly deployed database
+# (tables auto-created but not run through `init_db`) still has working logins.
+_DEMO_USERS = [
+    ("Platform Admin", "admin@loktra.ai", "admin123", UserRole.super_admin),
+    ("Demo MP", "mp@loktra.ai", "mp123456", UserRole.mp),
+    ("Demo Officer", "officer@loktra.ai", "officer123", UserRole.officer),
+    ("Demo Citizen", "citizen@loktra.ai", "citizen123", UserRole.citizen),
+]
+
+
+def ensure_demo_users(db: Session) -> int:
+    """Create the demo accounts if missing, and CORRECT an existing demo account
+    whose role / password / active flag has drifted (e.g. `admin@loktra.ai` left as
+    a citizen after a public signup). Never duplicates an email; uses the same
+    password hashing as registration/login. Returns how many rows changed."""
+    changed = 0
+    for name, email, password, role in _DEMO_USERS:
+        user = get_user_by_email(db, email)
+        if user is None:
+            db.add(
+                User(
+                    name=name,
+                    email=email,
+                    hashed_password=hash_password(password),
+                    role=role,
+                    is_active=True,
+                )
+            )
+            changed += 1
+            continue
+
+        fixed = False
+        if user.role != role:            # <- fixes the demo-role mismatch
+            user.role = role
+            fixed = True
+        if not user.is_active:
+            user.is_active = True
+            fixed = True
+        if not verify_password(password, user.hashed_password):
+            user.hashed_password = hash_password(password)
+            fixed = True
+        if fixed:
+            changed += 1
+    if changed:
+        db.commit()
+    return changed
+
+
 def authenticate(db: Session, email: str, password: str) -> User:
     user = get_user_by_email(db, email)
     if not user or not verify_password(password, user.hashed_password):

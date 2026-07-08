@@ -1,15 +1,17 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// Dev server proxies /api and /uploads to the FastAPI backend on :8000,
-// so the frontend can call same-origin paths with no CORS friction.
+// Dev server proxies /api and /uploads to the FastAPI backend (local :8000 by
+// default). Override with VITE_PROXY_TARGET to point at a deployed backend.
+const API_TARGET = process.env.VITE_PROXY_TARGET || "http://localhost:8000";
+
 export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
     proxy: {
-      "/api": { target: "http://localhost:8000", changeOrigin: true },
-      "/uploads": { target: "http://localhost:8000", changeOrigin: true },
+      "/api": { target: API_TARGET, changeOrigin: true },
+      "/uploads": { target: API_TARGET, changeOrigin: true },
     },
   },
   build: {

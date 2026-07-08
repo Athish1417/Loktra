@@ -4,7 +4,10 @@
       "Bash(npx vite *)",
       "Bash(.venv/Scripts/python.exe *)",
       "Bash(.venv/Scripts/pip.exe show *)",
-      "Bash(.venv/Scripts/pip.exe install *)"
+      "Bash(.venv/Scripts/pip.exe install *)",
+      "Bash(PYTHONPATH=. .venv/Scripts/python.exe -c ' *)",
+      "Bash(DATABASE_URL=\"sqlite:///./_verify_mp.db\" PYTHONPATH=. .venv/Scripts/python.exe -m app.db.init_db)",
+      "Bash(DATABASE_URL=\"sqlite:///./_verify_mp.db\" PYTHONPATH=. .venv/Scripts/python.exe tests/integration_check.py)"
     ]
   }
 }

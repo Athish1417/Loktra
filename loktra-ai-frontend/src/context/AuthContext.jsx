@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import * as authApi from "../api/auth";
+import { normalizeRole } from "../lib/constants";
 
 const AuthContext = createContext(null);
 
@@ -11,11 +12,15 @@ export const HOME_BY_ROLE = {
   super_admin: "/app/admin",
 };
 
+// Store users with a canonical role so every downstream check (redirects,
+// route guards, role selection) compares the same normalized value.
+const withRole = (u) => (u ? { ...u, role: normalizeRole(u.role) } : u);
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     try {
       const raw = localStorage.getItem("loktra_user");
-      return raw ? JSON.parse(raw) : null;
+      return raw ? withRole(JSON.parse(raw)) : null;
     } catch {
       return null;
     }
@@ -32,8 +37,9 @@ export function AuthProvider({ children }) {
     authApi
       .me()
       .then((fresh) => {
-        setUser(fresh);
-        localStorage.setItem("loktra_user", JSON.stringify(fresh));
+        const u = withRole(fresh);
+        setUser(u);
+        localStorage.setItem("loktra_user", JSON.stringify(u));
       })
       .catch(() => logout())
       .finally(() => setReady(true));
@@ -41,29 +47,30 @@ export function AuthProvider({ children }) {
   }, []);
 
   function persist(data) {
+    const u = withRole(data.user);
     localStorage.setItem("loktra_token", data.access_token);
-    localStorage.setItem("loktra_user", JSON.stringify(data.user));
-    setUser(data.user);
+    localStorage.setItem("loktra_user", JSON.stringify(u));
+    setUser(u);
+    return u;
   }
 
   async function login(email, password, expectedRole) {
     const data = await authApi.login(email, password);
-    // Enforce the selected role against the backend (source of truth). On a
-    // mismatch we throw WITHOUT persisting, so no session is ever established.
-    if (expectedRole && data.user.role !== expectedRole) {
+    // Enforce the selected role against the backend (source of truth), comparing
+    // NORMALIZED roles so "Super Admin" accepts backend super_admin OR admin, etc.
+    // On a mismatch we throw WITHOUT persisting, so no session is ever established.
+    if (expectedRole && normalizeRole(data.user.role) !== normalizeRole(expectedRole)) {
       const err = new Error("ROLE_MISMATCH");
       err.code = "ROLE_MISMATCH";
-      err.actualRole = data.user.role;
+      err.actualRole = normalizeRole(data.user.role);
       throw err;
     }
-    persist(data);
-    return data.user;
+    return persist(data);
   }
 
   async function register(payload) {
     const data = await authApi.register(payload);
-    persist(data);
-    return data.user;
+    return persist(data);
   }
 
   function logout() {

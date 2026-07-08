@@ -29,7 +29,7 @@ python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\
 pip install -r requirements.txt
 
 python -m app.db.init_db          # create + seed the demo database
-uvicorn app.main:app --reload     # http://localhost:8000  (interactive docs at /docs)
+uvicorn app.main:app --reload     # https://loktra-production.up.railway.app (interactive docs at /docs)
 ```
 
 The backend boots with **no API key and no `.env`** — it uses a deterministic
