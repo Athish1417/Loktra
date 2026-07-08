@@ -173,6 +173,10 @@ def visible_query(db: Session, user: User) -> Query:
             )
         )
     if user.role == UserRole.officer:
+        if not user.constituency_id:
+            # Incomplete officer profile: surface open complaints rather than an
+            # empty queue (mirrors the MP fallback).
+            return q.filter(Complaint.status != ComplaintStatusEnum.completed)
         # Assigned to them, auto-routed to them, or in their constituency.
         return q.filter(
             or_(
